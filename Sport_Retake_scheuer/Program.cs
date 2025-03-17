@@ -12,6 +12,7 @@ namespace Sport_Retake_scheuer
             HttpServer meinServer = new HttpServer(port);
             meinServer.Start();
             DatabaseConnection.TestConnection();
+            DatabaseConnection.SetupTables();
             Console.WriteLine("Press 'q' to stop the server...");
             while (true)
             {
@@ -19,6 +20,7 @@ namespace Sport_Retake_scheuer
                 if (Console.ReadKey(true).KeyChar == 'q')
                 {
                     meinServer.Stop();
+                    DatabaseConnection.DropTables();
                     break;
                 }
             }
