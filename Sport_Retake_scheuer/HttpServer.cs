@@ -3,16 +3,11 @@ using System.Net.Sockets;
 
 namespace Sport_Retake_scheuer;
 
-public class HttpServer
+public class HttpServer(int port)
 {
-    private int _port;
+    private int _port = port;
     private TcpListener _listener = null!;
     private bool _isListening;
-
-    public HttpServer(int port)
-    {
-        _port = port;
-    }
 
     public async void Start()
     {
@@ -50,7 +45,7 @@ public class HttpServer
     {
         using(client)
 
-        using (var stream = client.GetStream()) //ergänzung zu var -> bedeutet, dass der Typ der variable zur Compile zeit bestimmt wird (Sagt dem Compiler, erkenn den typ selbst)
+        await using (var stream = client.GetStream()) //ergänzung zu var -> bedeutet, dass der Typ der variable zur Compile zeit bestimmt wird (Sagt dem Compiler, erkenn den typ selbst)
         {
             try
             {

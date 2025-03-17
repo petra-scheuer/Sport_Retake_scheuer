@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using Sport_Retake_scheuer.Config;
 
 namespace Sport_Retake_scheuer
 {
@@ -10,9 +11,11 @@ namespace Sport_Retake_scheuer
             int port = 10001;
             HttpServer meinServer = new HttpServer(port);
             meinServer.Start();
+            DatabaseConnection.TestConnection();
             Console.WriteLine("Press 'q' to stop the server...");
             while (true)
             {
+               // Console.WriteLine("Waiting for a request..."); anm. war ein kurzer test 
                 if (Console.ReadKey(true).KeyChar == 'q')
                 {
                     meinServer.Stop();
