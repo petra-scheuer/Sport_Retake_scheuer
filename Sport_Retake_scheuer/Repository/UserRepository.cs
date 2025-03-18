@@ -44,7 +44,7 @@ public class UserRepository
         {
             return false;
         }
-        string storedPasswordHash = dataTable.Rows[0]["password"].ToString();
+        string? storedPasswordHash = dataTable.Rows[0]["password"].ToString(); // anm. string? -> das ? bedeutet, dass es auch ein Nullable wert sein kann. Hilft um Compiler Warnings zu vermeiden
 
         if (storedPasswordHash == "" || storedPasswordHash == null)
         {
@@ -64,6 +64,22 @@ public class UserRepository
     {
         return BCrypt.Net.BCrypt.HashPassword(password);
     }
+
+    public static bool UpdateToken(string username, string token)
+    {
+        try
+        {
+            const string sql = @"UPDATE users SET token = @token WHERE username = @u";
+            DatabaseConnection.ExecuteNonQueryWithParameters(sql, ("token", token), ("u", username));
+            return true;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e); //
+            throw;
+        }
+    }
+    
 
 }
 

@@ -87,24 +87,34 @@ public class UsersController
         bool authentificated = UserRepository.AuthUser(userDto.username, userDto.password);
         try
         {
-
-
             if (authentificated)
             {
-                var response = new HttpResponse();
-                response.StatusCode = 200;
-                response.ContentType = "text/plain";
-                response.Body = "Test User angelegt";
-                return response;
+                string token = Guid.NewGuid().ToString();
+                
+                bool tokenUpdated = UserRepository.UpdateToken(userDto.username, token);
+                if (!tokenUpdated)
+                {
+                    return new HttpResponse
+                    {
+                        StatusCode = 500,
+                        ContentType = "text/plain",
+                        Body = "Fehler beim Generieren des Tokens"
+                    };
+                }
+                string responseBody = JsonConvert.SerializeObject(new { Token = token });
+                return new HttpResponse
+                {
+                    StatusCode = 200,
+                    ContentType = "application/json",
+                    Body = responseBody
+                };
             }
-            else
-            {
-                var response = new HttpResponse();
-                response.StatusCode = 400;
-                response.ContentType = "text/plain";
-                response.Body = "Client Probleme";
-                return response;
-            }
+
+            var response = new HttpResponse();
+            response.StatusCode = 400;
+            response.ContentType = "text/plain";
+            response.Body = "Ungültiger Benutzername oder Passwort";
+            return response;
         }
         catch (Exception ex)
         {

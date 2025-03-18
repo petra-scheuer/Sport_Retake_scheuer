@@ -27,10 +27,10 @@ public class HttpServer(int port)
                 //Asynchrone Verarbeitung der clients
                 _ = HandleClientAsync(client);
             }
-            catch (SocketException ex) when (!_isListening)
+            catch (SocketException e) when (!_isListening)
             {
-            //wenn der Server gestopped wird soll einfach nur gebreaked werden.
-            break;
+                //wenn der Server gestopped wird soll einfach nur gebreaked werden.
+                break;
             }
             catch (Exception e)
             {
