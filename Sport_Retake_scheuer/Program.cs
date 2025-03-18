@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading;
+﻿
 using Sport_Retake_scheuer.Config;
 
 namespace Sport_Retake_scheuer
