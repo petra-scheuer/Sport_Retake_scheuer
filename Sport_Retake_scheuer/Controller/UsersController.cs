@@ -29,28 +29,45 @@ public class UsersController
 
     private static HttpResponse RegisterUser(HttpRequest request)
     {
-        using var reader = new StreamReader(request.Body);
-        string jsonBody = reader.ReadToEnd();
+        string jsonBody = request.Body;
 
         var userDto = JsonConvert.DeserializeObject<RegisterUser>(jsonBody);
+        if(userDto == null)
+        {
+            throw new Exception("Deserialisierung fehlgeschlagen");
+        }
         
         bool created = UserRepository.CreateUser(userDto.username, userDto.password);
-        
-        if (created)
+        try
         {
-            var response = new HttpResponse();
-            response.StatusCode = 200;
-            response.ContentType = "text/plain";
-            response.Body = "Test User angelegt";
-            return response;
+
+
+            if (created)
+            {
+                var response = new HttpResponse();
+                response.StatusCode = 200;
+                response.ContentType = "text/plain";
+                response.Body = "Test User angelegt";
+                return response;
+            }
+            else
+            {
+                var response = new HttpResponse();
+                response.StatusCode = 400;
+                response.ContentType = "text/plain";
+                response.Body = "Client Probleme";
+                return response;
+            }
         }
-        else
+        catch (Exception ex)
         {
-            var response = new HttpResponse();
-            response.StatusCode = 400;
-            response.ContentType = "text/plain";
-            response.Body = "Client Probleme";
-            return response;
+            Console.WriteLine("Fehler in RegisterUser: " + ex.Message);
+            return new HttpResponse
+            {
+                StatusCode = 500,
+                ContentType = "text/plain",
+                Body = "Serverfehler: " + ex.Message
+            };
         }
     }
     

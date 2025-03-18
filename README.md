@@ -11,3 +11,10 @@ psql -d Sports_Exercise_Battle
 
 4.) in die Database gehen
 \c Sports_Exercise_Battle
+
+_____________________
+curl tests:
+curl -X POST http://localhost:10001/users \
+     -H "Content-Type: application/json" \
+     -d "{\"username\": \"testuser\", \"password\": \"testpass\"}"
+

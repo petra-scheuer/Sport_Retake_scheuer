@@ -16,10 +16,11 @@ public class UserRepository
         {
             throw new ArgumentException("Username darf nicht leer oder null sein.");
         }
-        const string sql = @"INSERT INTO users (username, password, token,  elo)
-                                 VALUES (@u, @p, '', 100)";
+        var createdAt = DateTime.Now;
+        const string sql = @"INSERT INTO users (created_at, username, password, token,  elo)
+                                 VALUES (@c, @u, @p, '', 100)";
         
-        DatabaseConnection.ExecuteNonQueryWithParameters(sql, ("u", username), ("p", hashedpassword));
+        DatabaseConnection.ExecuteNonQueryWithParameters(sql,("c", createdAt), ("u", username), ("p", hashedpassword));
         return true;
     }
 
