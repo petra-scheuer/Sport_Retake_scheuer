@@ -1,12 +1,13 @@
 using Newtonsoft.Json;
 using Sport_Retake_scheuer.DatalayerTransferObjects;
+using Sport_Retake_scheuer.Interfaces;
 using Sport_Retake_scheuer.Repository;
 
 namespace Sport_Retake_scheuer.Controller;
 
 public class UsersController
 {
-    public static HttpResponse Handle(HttpRequest request)
+    public HttpResponse Handle(HttpRequest request)
     {
         if (request.Method == "GET" && request.Path == "/users")
         {
@@ -16,6 +17,7 @@ public class UsersController
         {
             return RegisterUser(request);
         }
+        
         else if (request.Method == "POST" && request.Path == "/login")
         {
             return LoginUser(request);
@@ -40,7 +42,8 @@ public class UsersController
             throw new Exception("Deserialisierung fehlgeschlagen");
         }
         
-        bool created = UserRepository.CreateUser(userDto.username, userDto.password);
+        var userRepository = new UserRepository();
+        bool created = userRepository.CreateUser(userDto.username, userDto.password);
         try
         {
 
@@ -84,14 +87,16 @@ public class UsersController
             throw new Exception("Deserialisierung fehlgeschlagen");
         }
         
-        bool authentificated = UserRepository.AuthUser(userDto.username, userDto.password);
+        var userRepository = new UserRepository();
+        bool authentificated = userRepository.AuthUser(userDto.username, userDto.password);
         try
         {
             if (authentificated)
             {
                 string token = Guid.NewGuid().ToString();
                 
-                bool tokenUpdated = UserRepository.UpdateToken(userDto.username, token);
+                var userRepo = new UserRepository();
+                bool tokenUpdated = userRepo.UpdateToken(userDto.username, token);
                 if (!tokenUpdated)
                 {
                     return new HttpResponse
@@ -128,5 +133,11 @@ public class UsersController
         }
     }
 
+    private readonly IUserInterface _userRepository;
+    
+    public UsersController(IUserInterface userRepository)
+    {
+        _userRepository = userRepository;
+    }
 }
 

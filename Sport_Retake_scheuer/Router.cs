@@ -1,3 +1,5 @@
+using Sport_Retake_scheuer.Repository;
+
 namespace Sport_Retake_scheuer;
 using Sport_Retake_scheuer.Controller;
 
@@ -6,13 +8,16 @@ public class Router
 {
     public static HttpResponse Route(HttpRequest request)
     {
+        var _usersController = new UsersController(new UserRepository());
+
         if (request.Path.StartsWith("/users"))
         {
-            return UsersController.Handle(request);
+            
+            return _usersController.Handle(request);
         }
         if (request.Path.StartsWith("/login"))
         {
-            return UsersController.Handle(request);
+            return _usersController.Handle(request);
         }
         else
         {

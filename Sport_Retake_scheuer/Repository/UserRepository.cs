@@ -1,10 +1,13 @@
 using Sport_Retake_scheuer.Config;
 using System.Data;
+using Sport_Retake_scheuer.Interfaces;
+
 namespace Sport_Retake_scheuer.Repository;
 
-public class UserRepository
+public class UserRepository : IUserInterface
 {
-    public static bool CreateUser(string username, string password)
+    
+    public bool CreateUser(string username, string password)
     {
         if (password == "" || password == null)
         {
@@ -24,7 +27,7 @@ public class UserRepository
         return true;
     }
 
-    public static bool AuthUser(string username, string password)
+    public bool AuthUser(string username, string password)
     {
         if (password == "" || password == null)
         {
@@ -55,17 +58,17 @@ public class UserRepository
         return isValidPassword;
     }
 
-    private static bool VerifyPassword(string password, string? storedPasswordHash)
+    private bool VerifyPassword(string password, string? storedPasswordHash)
     {
         return BCrypt.Net.BCrypt.Verify(password, storedPasswordHash);
     }
 
-    private static string HashPassword(string password)
+    private string HashPassword(string password)
     {
         return BCrypt.Net.BCrypt.HashPassword(password);
     }
 
-    public static bool UpdateToken(string username, string token)
+    public bool UpdateToken(string username, string token)
     {
         try
         {
