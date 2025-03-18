@@ -10,6 +10,10 @@ public class Router
         {
             return UsersController.Handle(request);
         }
+        if (request.Path.StartsWith("/login"))
+        {
+            return UsersController.Handle(request);
+        }
         else
         {
             return new HttpResponse

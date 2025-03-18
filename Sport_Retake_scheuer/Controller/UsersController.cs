@@ -15,7 +15,10 @@ public class UsersController
         else if (request.Method == "POST" && request.Path == "/users")
         {
             return RegisterUser(request);
-            
+        }
+        else if (request.Method == "POST" && request.Path == "/login")
+        {
+            return LoginUser(request);
         }
         
 
@@ -71,5 +74,49 @@ public class UsersController
         }
     }
     
+    private static HttpResponse LoginUser(HttpRequest request)
+    {
+        string jsonBody = request.Body;
+
+        var userDto = JsonConvert.DeserializeObject<RegisterUser>(jsonBody);
+        if(userDto == null)
+        {
+            throw new Exception("Deserialisierung fehlgeschlagen");
+        }
+        
+        bool authentificated = UserRepository.AuthUser(userDto.username, userDto.password);
+        try
+        {
+
+
+            if (authentificated)
+            {
+                var response = new HttpResponse();
+                response.StatusCode = 200;
+                response.ContentType = "text/plain";
+                response.Body = "Test User angelegt";
+                return response;
+            }
+            else
+            {
+                var response = new HttpResponse();
+                response.StatusCode = 400;
+                response.ContentType = "text/plain";
+                response.Body = "Client Probleme";
+                return response;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Fehler in RegisterUser: " + ex.Message);
+            return new HttpResponse
+            {
+                StatusCode = 500,
+                ContentType = "text/plain",
+                Body = "Serverfehler: " + ex.Message
+            };
+        }
+    }
+
 }
 
