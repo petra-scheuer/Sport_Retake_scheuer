@@ -120,5 +120,42 @@ namespace TestProject
             Assert.AreEqual("Ungültiger Benutzername oder Passwort", wrongLoginResponse.Body);
             
         }
+
+        [Test] 
+        public void ChangeUser_Positive_Test()
+        {
+            _userRepositoryMock
+                .Setup(repo => repo.ChangeUsername("olduser", "newuser"))
+                .Returns(true);
+
+            var changeUserRequest = new HttpRequest()
+            {
+                Method = "PUT",
+                Path = "/users",
+                Body = "{\"OldUsername\":\"olduser\", \"NewUsername\":\"newuser\"}"
+            };
+            var response = _usersController.Handle(changeUserRequest);
+            
+            Assert.AreEqual(200, response.StatusCode);
+            Assert.AreEqual("Username erfolgreich geändert", response.Body);
+        }
+        [Test]
+        public void ChangeUser_Negative_Test()
+        {
+            _userRepositoryMock
+                .Setup(repo => repo.ChangeUsername("olduser", "newuser"))
+                .Returns(true);
+
+            var changeUserRequest = new HttpRequest()
+            {
+                Method = "PUT",
+                Path = "/users",
+                Body = "{\"OldUsername\":\"false\", \"NewUsername\":\"newuser\"}"
+            };
+            var response = _usersController.Handle(changeUserRequest);
+            
+            Assert.AreEqual(400, response.StatusCode);
+            Assert.AreEqual("Username ändern fehlgeschlagen", response.Body);
+        }
     }
 }

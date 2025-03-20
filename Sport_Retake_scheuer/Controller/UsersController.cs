@@ -17,6 +17,10 @@ public class UsersController
         {
             return RegisterUser(request);
         }
+        else if (request.Method == "PUT" && request.Path == "/users")
+        {
+            return ChangeUser(request);
+        }
         
         else if (request.Method == "POST" && request.Path == "/login")
         {
@@ -25,10 +29,12 @@ public class UsersController
         
 
 
-        var response = new HttpResponse();
-        response.StatusCode = 200;
-        response.ContentType = "text/plain";
-        response.Body = "Test damit keine Compiler errors auftreten";
+        var response = new HttpResponse
+        {
+            StatusCode = 200,
+            ContentType = "text/plain",
+            Body = "Test damit keine Compiler errors auftreten"
+        };
         return response;
     }
     
@@ -82,7 +88,49 @@ public class UsersController
             };
         }
     }
-    
+
+    private HttpResponse ChangeUser(HttpRequest request)
+    {
+        string jsonBody = request.Body;
+        var changeUserDto = JsonConvert.DeserializeObject<ChangeUserDto>(jsonBody);
+
+        if (changeUserDto == null)
+        {
+            throw new Exception("Deserialisierung fehlgeschlagen");
+        }
+        bool changed = _userRepository.ChangeUsername(changeUserDto.OldUsername, changeUserDto.NewUsername);
+        try
+        {
+            if (changed)
+            {
+                return new HttpResponse
+                {
+                    StatusCode = 200,
+                    ContentType = "text/plain",
+                    Body = "Username erfolgreich geändert"
+                };
+            }
+            else
+            {
+                return new HttpResponse
+                {
+                    StatusCode = 400,
+                    ContentType = "text/plain",
+                    Body = "Username ändern fehlgeschlagen"
+                };
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Fehler in ChangeUser: " + ex.Message);
+            return new HttpResponse
+            {
+                StatusCode = 500,
+                ContentType = "text/plain",
+                Body = "Serverfehler: " + ex.Message
+            };
+        }
+    }
     private HttpResponse LoginUser(HttpRequest request)
     {
         string jsonBody = request.Body;

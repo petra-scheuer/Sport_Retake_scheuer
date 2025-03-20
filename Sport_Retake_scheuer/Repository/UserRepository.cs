@@ -82,6 +82,21 @@ public class UserRepository : IUserInterface
             throw;
         }
     }
+
+    public bool ChangeUsername(string oldUsername, string newUsername)
+    {
+        try
+        {
+            const string sql = @"UPDATE users SET username=@u WHERE username = @u";
+            DatabaseConnection.ExecuteNonQueryWithParameters(sql, ("u", newUsername), ("u", oldUsername));
+            return true;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
     
 
 }
