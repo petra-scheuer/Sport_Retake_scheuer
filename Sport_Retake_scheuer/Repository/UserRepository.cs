@@ -97,6 +97,24 @@ public class UserRepository : IUserInterface
             throw;
         }
     }
+
+    public bool AuthByUsernameAndToken(string username, string token)
+    {
+        const string sql = @"SELECT token FROM users WHERE username = @u";
+    
+        object result = DatabaseConnection.ExecuteQueryWithParameters(sql, ("u", username));
+    
+        // Falls kein Ergebnis gefunden wird, ist die Authentifizierung fehlgeschlagen
+        if(result == null)
+        {
+            return false;
+        }
+    
+        string tokenFromDb = result.ToString();
+    
+        // Vergleiche den in der DB gespeicherten Token mit dem übergebenen Token
+        return tokenFromDb == token;
+    }
     
 
 }

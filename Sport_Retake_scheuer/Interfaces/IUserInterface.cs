@@ -5,6 +5,7 @@ public interface IUserInterface
     bool CreateUser(string username, string password);
     bool AuthUser(string username, string password);
     bool UpdateToken(string username, string token);
-    
     bool ChangeUsername(string oldUsername, string newUsername);
+    
+    bool AuthByUsernameAndToken(string username, string token);
 }

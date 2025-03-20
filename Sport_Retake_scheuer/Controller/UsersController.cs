@@ -58,8 +58,7 @@ public class UsersController
         bool created = _userRepository.CreateUser(userDto.username, userDto.password);
         try
         {
-
-
+            
             if (created)
             {
                 var response = new HttpResponse();
