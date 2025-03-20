@@ -31,8 +31,15 @@ public class UsersController
         response.Body = "Test damit keine Compiler errors auftreten";
         return response;
     }
+    
+    private readonly IUserInterface _userRepository;
 
-    private static HttpResponse RegisterUser(HttpRequest request)
+    public UsersController(IUserInterface userRepository)
+    {
+        _userRepository = userRepository;
+    }
+
+    private HttpResponse RegisterUser(HttpRequest request)
     {
         string jsonBody = request.Body;
 
@@ -42,8 +49,7 @@ public class UsersController
             throw new Exception("Deserialisierung fehlgeschlagen");
         }
         
-        var userRepository = new UserRepository();
-        bool created = userRepository.CreateUser(userDto.username, userDto.password);
+        bool created = _userRepository.CreateUser(userDto.username, userDto.password);
         try
         {
 
@@ -61,7 +67,7 @@ public class UsersController
                 var response = new HttpResponse();
                 response.StatusCode = 400;
                 response.ContentType = "text/plain";
-                response.Body = "Client Probleme";
+                response.Body = "Fehler beim anlegen des Users aufgetreten";
                 return response;
             }
         }
@@ -132,12 +138,6 @@ public class UsersController
             };
         }
     }
-
-    private readonly IUserInterface _userRepository;
     
-    public UsersController(IUserInterface userRepository)
-    {
-        _userRepository = userRepository;
-    }
 }
 

@@ -43,5 +43,25 @@ namespace TestProject
             Assert.That(response.Body, Is.EqualTo("Test User angelegt"));
         }
         
+        [Test]
+        public void RegisterInvalidUser_InValidUser_ReturnsErrorResponse()
+        {
+            // Das Setup prüft nun, ob das Passwort nur aus Leerzeichen besteht
+            _userRepositoryMock
+                .Setup(repo => repo.CreateUser("testuserfalse", It.Is<string>(p => string.IsNullOrWhiteSpace(p))))
+                .Returns(false);
+
+            var request = new HttpRequest
+            {
+                Method = "POST",
+                Path = "/users",
+                Body = "{\"username\":\"testuserfalse\", \"password\":\" \"}"
+            };
+
+            var response = _usersController.Handle(request);
+
+            Assert.That(response.StatusCode, Is.EqualTo(400));
+            Assert.That(response.Body, Is.EqualTo("Fehler beim anlegen des Users aufgetreten"));
+        }
     }
 }
