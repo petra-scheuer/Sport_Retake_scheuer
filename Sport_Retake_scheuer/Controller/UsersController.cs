@@ -83,7 +83,7 @@ public class UsersController
         }
     }
     
-    private static HttpResponse LoginUser(HttpRequest request)
+    private HttpResponse LoginUser(HttpRequest request)
     {
         string jsonBody = request.Body;
 
@@ -93,8 +93,7 @@ public class UsersController
             throw new Exception("Deserialisierung fehlgeschlagen");
         }
         
-        var userRepository = new UserRepository();
-        bool authentificated = userRepository.AuthUser(userDto.username, userDto.password);
+        bool authentificated = _userRepository.AuthUser(userDto.username, userDto.password);
         try
         {
             if (authentificated)
