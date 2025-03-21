@@ -18,3 +18,9 @@ curl -X POST http://localhost:10001/users \
      -H "Content-Type: application/json" \
      -d "{\"username\": \"testuser\", \"password\": \"testpass\"}"
 
+curl -X POST http://localhost:10001/login \
+     -H "Content-Type: application/json" \
+     -d "{\"username\": \"testuser\", \"password\": \"testpass\"}"
+
+#returns token
+

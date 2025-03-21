@@ -24,6 +24,10 @@ public class UserRepository : IUserInterface
                                  VALUES (@c, @u, @p, '', 100)";
         
         DatabaseConnection.ExecuteNonQueryWithParameters(sql,("c", createdAt), ("u", username), ("p", hashedPassword));
+        
+        const string sqlHistory = @"INSERT INTO history (username, pushup_count, duration)
+                                VALUES (@u, 0, 0)";
+        DatabaseConnection.ExecuteNonQueryWithParameters(sqlHistory, ("u", username));
         return true;
     }
 
@@ -47,7 +51,7 @@ public class UserRepository : IUserInterface
         {
             return false;
         }
-        string? storedPasswordHash = dataTable.Rows[0]["password"].ToString(); // anm. string? -> das ? bedeutet, dass es auch ein Nullable wert sein kann. Hilft um Compiler Warnings zu vermeiden
+        string? storedPasswordHash = dataTable.Rows[0]["password"].ToString(); // anm. string? → bedeutet, dass es auch ein Nullable wert sein kann. Hilft, um Compiler Warnings zu vermeiden
 
         if (storedPasswordHash == "" || storedPasswordHash == null)
         {
@@ -100,20 +104,34 @@ public class UserRepository : IUserInterface
 
     public bool AuthByUsernameAndToken(string username, string token)
     {
-        const string sql = @"SELECT token FROM users WHERE username = @u";
-    
-        object result = DatabaseConnection.ExecuteQueryWithParameters(sql, ("u", username));
-    
-        // Falls kein Ergebnis gefunden wird, ist die Authentifizierung fehlgeschlagen
-        if(result == null)
+        try
         {
-            return false;
+            const string sql = @"SELECT token FROM users WHERE username = @u";
+            DataTable dt = DatabaseConnection.ExecuteQueryWithParameters(sql, ("u", username));
+
+            if (dt == null)
+            {
+                throw new Exception("ExecuteQueryWithParameters returned null.");
+            }
+
+            if (dt.Rows.Count == 0)
+            {
+                throw new Exception($"Kein Benutzer mit dem Benutzernamen '{username}' gefunden.");
+            }
+
+            string tokenFromDb = dt.Rows[0]["token"].ToString();
+            if (tokenFromDb != token)
+            {
+                throw new Exception($"Token-Mismatch: Erwartet '{token}', aber erhalten '{tokenFromDb}'.");
+            }
+
+            return true;
         }
-    
-        string tokenFromDb = result.ToString();
-    
-        // Vergleiche den in der DB gespeicherten Token mit dem übergebenen Token
-        return tokenFromDb == token;
+        catch (Exception ex)
+        {
+            Console.WriteLine("Fehler in AuthByUsernameAndToken: " + ex.ToString());
+            throw;
+        }
     }
     
 
