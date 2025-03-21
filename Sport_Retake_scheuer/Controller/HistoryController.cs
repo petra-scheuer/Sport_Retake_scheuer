@@ -22,7 +22,7 @@ public class HistoryController
         }
         else if (request.Method == "POST" && request.Path == "/history")
         {
-            Console.WriteLine("Muss implementiert werden");
+            return AddHistoryEntry(request);
         }
         else if (request.Method == "PUT" && request.Path == "/history")
         {
@@ -84,5 +84,49 @@ public class HistoryController
             ContentType = "text/plain",
             Body = JsonConvert.SerializeObject(UserHistory)
         };
+    }
+
+    private HttpResponse AddHistoryEntry(HttpRequest request)
+    {
+        string jsonBody = request.Body;
+        var HistoryEntryDto = JsonConvert.DeserializeObject<HistoryEntryDto>(jsonBody);
+        if (HistoryEntryDto == null)
+        {
+            throw new Exception("Deserialisierung fehlgeschlagen");
+        }
+
+        var username = HistoryEntryDto.Username;
+        var pushupcount = HistoryEntryDto.PushupCount;
+        var duration = HistoryEntryDto.Duration;
+        var token = HistoryEntryDto.Token;
+
+        bool authcheck = _userRepository.AuthByUsernameAndToken(username, token);
+        if (authcheck == false)
+        {
+            return new HttpResponse
+            {
+                StatusCode = 400,
+                ContentType = "text/plain",
+                Body = "Fehler beim Authentifizieren"
+            };
+        }
+        
+        bool added = _historyRepository.AddUserHistoryItem(username, pushupcount, duration );
+        if (added == false || added == null)
+        {
+            return new HttpResponse
+            {
+                StatusCode = 500,
+                ContentType = "text/plain",
+                Body = "Fehler beim Aufrufen der Historie"
+            };
+        }
+        return new HttpResponse
+        {
+            StatusCode = 200,
+            ContentType = "text/plain",
+            Body = "Training erfolgreich hinzugefügt"
+        };
+        
     }
 }
