@@ -24,3 +24,11 @@ curl -X POST http://localhost:10001/login \
 
 #returns token
 
+curl -X GET http://localhost:10001/history \
+     -H "Content-Type: application/json" \
+     -d "{\"username\": \"testuser\", \"Token\": \"2977b93b-fff5-4ccc-8afa-fe6865432d63\"}"
+
+### Add a training
+curl -X POST http://localhost:10001/history \
+     -H "Content-Type: application/json" \
+     -d "{\"Username\":\"testuser\", \"Token\":\"2977b93b-fff5-4ccc-8afa-fe6865432d63\", \"pushupcount\":10, \"duration\":120}"

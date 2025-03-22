@@ -1,3 +1,5 @@
+using System.Data;
+using Newtonsoft.Json;
 using Sport_Retake_scheuer.Config;
 using Sport_Retake_scheuer.Interfaces;
 
@@ -9,10 +11,15 @@ public class HistoryRepository : IHistoryInterface
     {
         const string sql = @"SELECT * FROM history WHERE username = @u";
 
-        object result = DatabaseConnection.ExecuteQueryWithParameters(sql, ("u", username));
+        DataTable dt = DatabaseConnection.ExecuteQueryWithParameters(sql, ("u", username)) as DataTable;
 
-        string historyFromDb = result.ToString();
+        if (dt == null || dt.Rows.Count == 0)
+        {
+            return "[]"; // Gibt ein leeres JSON-Array zurück, wenn keine Daten vorhanden sind.
+        }
 
+        // Serialisiert den DataTable-Inhalt in einen JSON-String
+        string historyFromDb = JsonConvert.SerializeObject(dt);
         return historyFromDb;
     }
 

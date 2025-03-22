@@ -109,20 +109,17 @@ public class UserRepository : IUserInterface
             const string sql = @"SELECT token FROM users WHERE username = @u";
             DataTable dt = DatabaseConnection.ExecuteQueryWithParameters(sql, ("u", username));
 
-            if (dt == null)
+            if (dt == null || dt.Rows.Count == 0)
             {
-                throw new Exception("ExecuteQueryWithParameters returned null.");
-            }
-
-            if (dt.Rows.Count == 0)
-            {
-                throw new Exception($"Kein Benutzer mit dem Benutzernamen '{username}' gefunden.");
+                // Kein Benutzer gefunden
+                return false;
             }
 
             string tokenFromDb = dt.Rows[0]["token"].ToString();
             if (tokenFromDb != token)
             {
-                throw new Exception($"Token-Mismatch: Erwartet '{token}', aber erhalten '{tokenFromDb}'.");
+                Console.WriteLine($"Token-Mismatch: Erwartet '{token}', aber erhalten '{tokenFromDb}'.");
+                return false;
             }
 
             return true;
@@ -130,10 +127,9 @@ public class UserRepository : IUserInterface
         catch (Exception ex)
         {
             Console.WriteLine("Fehler in AuthByUsernameAndToken: " + ex.ToString());
-            throw;
+            return false;
         }
     }
-    
 
 }
 

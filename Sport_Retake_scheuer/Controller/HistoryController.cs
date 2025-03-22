@@ -45,45 +45,60 @@ public class HistoryController
 
     private HttpResponse GetUserHistory(HttpRequest request)
     {
-        string jsonBody = request.Body;
-        var getHistoryDto = JsonConvert.DeserializeObject<GetHistoryDto>(jsonBody);
-
-        if (getHistoryDto == null)
+        try
         {
-            throw new Exception("Deserialisierung fehlgeschlagen");
-        }
+            string jsonBody = request.Body;
+            var getHistoryDto = JsonConvert.DeserializeObject<GetHistoryDto>(jsonBody);
 
-        var username = getHistoryDto.Username;
-        var token = getHistoryDto.Token;
+            if (getHistoryDto == null)
+            {
+                throw new Exception("Deserialisierung fehlgeschlagen");
+            }
 
-        bool authcheck = _userRepository.AuthByUsernameAndToken(username, token);
-        if (authcheck == false)
-        {
+            var username = getHistoryDto.Username;
+            var token = getHistoryDto.Token;
+
+            bool authcheck = _userRepository.AuthByUsernameAndToken(username, token);
+            if (authcheck == false)
+            {
+                return new HttpResponse
+                {
+                    StatusCode = 400,
+                    ContentType = "text/plain",
+                    Body = "Fehler beim Authentifizieren"
+                };
+            }
+
+            var UserHistory = _historyRepository.GetUserHistory(username);
+            if (UserHistory == null)
+            {
+                return new HttpResponse
+                {
+                    StatusCode = 500,
+                    ContentType = "text/plain",
+                    Body = "Fehler beim Aufrufen der Historie"
+                };
+            }
+
+            Console.WriteLine($"User: {username}, UserHistory: {JsonConvert.SerializeObject(UserHistory)}");
+
             return new HttpResponse
             {
-                StatusCode = 400,
+                StatusCode = 200,
                 ContentType = "text/plain",
-                Body = "Fehler beim Authentifizieren"
+                Body = JsonConvert.SerializeObject(UserHistory)
             };
         }
-
-        var UserHistory = _historyRepository.GetUserHistory(username);
-        if (UserHistory == null)
+        catch (Exception ex)
         {
+            Console.WriteLine("Fehler im GetUserHistory: " + ex);
             return new HttpResponse
             {
                 StatusCode = 500,
                 ContentType = "text/plain",
-                Body = "Fehler beim Aufrufen der Historie"
+                Body = "Interner Serverfehler"
             };
         }
-
-        return new HttpResponse
-        {
-            StatusCode = 200,
-            ContentType = "text/plain",
-            Body = JsonConvert.SerializeObject(UserHistory)
-        };
     }
 
     private HttpResponse AddHistoryEntry(HttpRequest request)
