@@ -131,5 +131,11 @@ public class UserRepository : IUserInterface
         }
     }
 
+    public void UpdateElo(string username, int value)
+    {
+        throw new NotImplementedException();
+    }
+
+
 }
 

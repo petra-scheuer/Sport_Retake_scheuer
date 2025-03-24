@@ -8,4 +8,6 @@ public interface IUserInterface
     bool ChangeUsername(string oldUsername, string newUsername);
     
     bool AuthByUsernameAndToken(string username, string token);
+
+    void UpdateElo(string username, int value);
 }

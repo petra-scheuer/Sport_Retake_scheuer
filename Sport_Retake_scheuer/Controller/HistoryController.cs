@@ -1,6 +1,7 @@
 using Newtonsoft.Json;
 using Sport_Retake_scheuer.DatalayerTransferObjects;
 using Sport_Retake_scheuer.Interfaces;
+using Sport_Retake_scheuer.Service;
 
 namespace Sport_Retake_scheuer.Controller;
 
@@ -125,8 +126,7 @@ public class HistoryController
                 Body = "Fehler beim Authentifizieren"
             };
         }
-        
-        bool added = _historyRepository.AddUserHistoryItem(username, pushupcount, duration );
+        bool added = TournamentService.AddPushupRecord(HistoryEntryDto);
         if (added == false || added == null)
         {
             return new HttpResponse

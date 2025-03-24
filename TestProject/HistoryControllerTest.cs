@@ -1,8 +1,11 @@
 using Moq;
 using Newtonsoft.Json;
+using NUnit.Framework;
 using Sport_Retake_scheuer;
 using Sport_Retake_scheuer.Controller;
+using Sport_Retake_scheuer.DatalayerTransferObjects;
 using Sport_Retake_scheuer.Interfaces;
+using Sport_Retake_scheuer.Service;
 
 namespace TestProject
 {
@@ -10,34 +13,55 @@ namespace TestProject
     public class HistoryControllerTests
     {
         private Mock<IHistoryInterface> _historyInterfaceMock;
+        private Mock<IUserInterface> _userInterfaceMock;
+        private Mock<ITournamentInterface> _tournamentInterfaceMock;
         private HistoryController _historyController;
-        private Mock<IUserInterface> _userRepositoryMock;
 
         [SetUp]
         public void Setup()
         {
             _historyInterfaceMock = new Mock<IHistoryInterface>();
-            _userRepositoryMock = new Mock<IUserInterface>();
-            _historyController = new HistoryController(_historyInterfaceMock.Object, _userRepositoryMock.Object);
+            _userInterfaceMock = new Mock<IUserInterface>();
+            _tournamentInterfaceMock = new Mock<ITournamentInterface>();
+
+            // Dummy-Turnier erstellen
+            var dummyTournament = new TournamentDto
+            {
+                TournamentId = 123,
+                StartTime = DateTime.Now,
+                IsFinished = false
+            };
+
+            // Setup des Tournament-Interfaces
+            _tournamentInterfaceMock
+                .Setup(t => t.GetActiveTournament())
+                .Returns(dummyTournament);
+            _tournamentInterfaceMock
+                .Setup(t => t.CreateTournament(It.IsAny<DateTime>()))
+                .Callback<DateTime>(dt => { });
+
+            // TournamentService.SetTournamentRepo(_tournamentInterfaceMock.Object);
+
+            // HistoryController mit den Mocks erzeugen
+            _historyController = new HistoryController(_historyInterfaceMock.Object, _userInterfaceMock.Object);
         }
 
-       
         [Test]
         public void GetHistory_ValidRequest_ReturnsHistoryData()
         {
-            // Gültiger Username, Token und Dummy-History-Daten als JSON
+            // Arrange
             string username = "testuser";
             string token = "dummyToken";
-            string dummyHistoryData =
-                "[{\"pushup_count\":10,\"duration\":120}, {\"pushup_count\":15,\"duration\":120}]";
+            // Dummy-History-Daten als JSON-String:
+            string dummyHistoryData = "[{\"pushup_count\":10,\"duration\":120}, {\"pushup_count\":15,\"duration\":120}]";
 
             _historyInterfaceMock
                 .Setup(h => h.GetUserHistory(username))
                 .Returns(dummyHistoryData);
 
-            _userRepositoryMock
-                .Setup(u => u.AuthByUsernameAndToken(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns((string u, string t) => !string.IsNullOrEmpty(u) && !string.IsNullOrEmpty(t) && u == "testuser" && t == "dummyToken");
+            _userInterfaceMock
+                .Setup(u => u.AuthByUsernameAndToken(username, token))
+                .Returns(true);
 
             var request = new HttpRequest
             {
@@ -50,16 +74,17 @@ namespace TestProject
             var response = _historyController.Handle(request);
 
             // Assert:
+            // Da der Controller den Rückgabewert nochmals serialisiert,
+            // erwarten wir JsonConvert.SerializeObject(dummyHistoryData)
             Assert.AreEqual(200, response.StatusCode);
-
             Assert.AreEqual("text/plain", response.ContentType);
             Assert.AreEqual(JsonConvert.SerializeObject(dummyHistoryData), response.Body);
         }
-        
+
         [Test]
         public void GetHistory_MissingUsername_ReturnsBadRequest()
         {
-            // Request ohne den erforderlichen Username
+            // Arrange: Request ohne den erforderlichen Username
             var request = new HttpRequest
             {
                 Method = "GET",
@@ -76,7 +101,7 @@ namespace TestProject
         }
 
         [Test]
-        public void AddTrainingItemToHistory_ValidRequest_ReturnsHistoryData()
+        public void AddTrainingItemToHistory_ValidRequest_ReturnsSuccessMessage()
         {
             // Arrange
             string username = "testuser";
@@ -84,12 +109,12 @@ namespace TestProject
             int pushupCount = 10;
             int duration = 120;
 
-            _userRepositoryMock
-                .Setup(u => u.AuthByUsernameAndToken(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns((string u, string t) => !string.IsNullOrEmpty(u) && !string.IsNullOrEmpty(t) && u == "testuser" && t == "dummyToken");
+            _userInterfaceMock
+                .Setup(u => u.AuthByUsernameAndToken(username, token))
+                .Returns(true);
 
             _historyInterfaceMock
-                .Setup(h => h.AddUserHistoryItem(username, pushupCount, duration))
+                .Setup(h => h.AddUserHistoryItem(username, pushupCount, duration, It.IsAny<int>()))
                 .Returns(true);
 
             var request = new HttpRequest
@@ -107,7 +132,5 @@ namespace TestProject
             Assert.AreEqual("text/plain", response.ContentType);
             Assert.AreEqual("Training erfolgreich hinzugefügt", response.Body);
         }
-        
-        
     }
 }

@@ -6,4 +6,6 @@ public class HistoryEntryDto
     public required string Token { get; set; }
     public required int PushupCount { get; set; }
     public required int Duration { get; set; }
+    
+    public  int TournamentId { get; set; }
 }

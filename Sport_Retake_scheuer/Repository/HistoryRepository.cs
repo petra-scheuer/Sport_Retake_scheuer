@@ -1,6 +1,7 @@
 using System.Data;
 using Newtonsoft.Json;
 using Sport_Retake_scheuer.Config;
+using Sport_Retake_scheuer.DatalayerTransferObjects;
 using Sport_Retake_scheuer.Interfaces;
 
 namespace Sport_Retake_scheuer.Repository;
@@ -23,16 +24,17 @@ public class HistoryRepository : IHistoryInterface
         return historyFromDb;
     }
 
-    public bool AddUserHistoryItem(string username, int pushupcount, int duration)
+    public bool AddUserHistoryItem(string username, int pushupcount, int duration, int tournamentId)
     {
         try
         {
-            const string sql = @"INSERT INTO history (username, pushup_count, duration)
-                                     VALUES (@u, @c, @d)";
+            const string sql = @"INSERT INTO history (username, pushup_count, duration, tournament_id)
+                                     VALUES (@u, @c, @d, @t)";
             DatabaseConnection.ExecuteNonQueryWithParameters(sql,
                 ("u", username),
                 ("c", pushupcount),
-                ("d", duration));
+                ("d", duration),
+                ("t", tournamentId));
             return true;
         }
         catch (Exception ex)
@@ -40,6 +42,10 @@ public class HistoryRepository : IHistoryInterface
             Console.WriteLine("Fehler beim Hinzufügen eines History-Eintrags: " + ex);
             return false;
         }
+    }
+    public List<HistoryEntryDto> GetRecordsByTournamentId(int tournamentId)
+    {
+        throw new NotImplementedException();
     }
 
 }
