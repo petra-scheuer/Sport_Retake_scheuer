@@ -28,7 +28,7 @@ namespace Sport_Retake_scheuer.Service
             {
                 // Neues Turnier erstellen
                 _tournamentRepo.CreateTournament(DateTime.Now);
-                // Nach Erstellung erneut abrufen (hier nehmen wir an, dass GetActiveTournament nun das neue Turnier liefert)
+                // Nach Erstellung erneut abrufen 
                 activeTournament = _tournamentRepo.GetActiveTournament();
             }
     

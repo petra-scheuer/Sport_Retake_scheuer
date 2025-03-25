@@ -24,25 +24,23 @@ namespace TestProject
             _userInterfaceMock = new Mock<IUserInterface>();
             _tournamentInterfaceMock = new Mock<ITournamentInterface>();
 
-            // Dummy-Turnier erstellen
-            var dummyTournament = new TournamentDto
-            {
-                TournamentId = 123,
-                StartTime = DateTime.Now,
-                IsFinished = false
-            };
-
-            // Setup des Tournament-Interfaces
+            // Dummy-Turnier: Immer ein Turnier mit ID 1 zurückgeben
             _tournamentInterfaceMock
                 .Setup(t => t.GetActiveTournament())
-                .Returns(dummyTournament);
+                .Returns(new TournamentDto 
+                { 
+                    TournamentId = 1, 
+                    StartTime = DateTime.Now, 
+                    IsFinished = false 
+                });
             _tournamentInterfaceMock
                 .Setup(t => t.CreateTournament(It.IsAny<DateTime>()))
-                .Callback<DateTime>(dt => { });
+                .Callback<DateTime>(dt => { /* evtl. Dummy-Logik */ });
 
-            // TournamentService.SetTournamentRepo(_tournamentInterfaceMock.Object);
+            // Durch den Konstruktoraufruf werden die statischen Felder gesetzt:
+            new TournamentService(_tournamentInterfaceMock.Object, _userInterfaceMock.Object, _historyInterfaceMock.Object);
 
-            // HistoryController mit den Mocks erzeugen
+            // Jetzt kannst du deinen HistoryController erzeugen
             _historyController = new HistoryController(_historyInterfaceMock.Object, _userInterfaceMock.Object);
         }
 

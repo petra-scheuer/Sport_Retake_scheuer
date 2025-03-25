@@ -3,12 +3,14 @@ using Sport_Retake_scheuer.Config;
 using Sport_Retake_scheuer.DatalayerTransferObjects;
 using Sport_Retake_scheuer.Interfaces;
 using System.Data;
+using Microsoft.Extensions.Logging;
+using Sport_Retake_scheuer;
 
 public class TournamentRepository : ITournamentInterface
 {
     public TournamentDto GetActiveTournament()
     {
-        // SQL: Wähle ein Turnier, das noch nicht abgeschlossen ist und bei dem weniger als 2 Minuten seit dem Start vergangen sind.
+        // SQL: Tunier das noch nicht abgeschlossen ist und bei dem weniger als 2 Minuten seit dem Start vergangen sind.
         string sql = "SELECT id, created_at, endet_at " +
                      "FROM tournament " +
                      "WHERE status = false AND (NOW() - created_at) < interval '2 minutes' " +
@@ -40,6 +42,7 @@ public class TournamentRepository : ITournamentInterface
                      "VALUES ('" + formattedStartTime + "', false, NULL);";
 
         DatabaseConnection.ExecuteNonQueryWithParameters(sql);
+        MyLogger.LogInfo($"Erstelle Turnier mit Startzeit {startTime}. SQL: {sql}");
     }
 
     public void UpdateTournament(TournamentDto tournament)
