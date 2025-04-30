@@ -91,8 +91,8 @@ public class UserRepository : IUserInterface
     {
         try
         {
-            const string sql = @"UPDATE users SET username=@u WHERE username = @u";
-            DatabaseConnection.ExecuteNonQueryWithParameters(sql, ("u", newUsername), ("u", oldUsername));
+            const string sql = @"UPDATE users SET username=@u WHERE username = @o";
+            DatabaseConnection.ExecuteNonQueryWithParameters(sql, ("u", newUsername), ("o", oldUsername));
             return true;
         }
         catch (Exception e)
