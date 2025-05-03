@@ -13,4 +13,6 @@ public interface IUserInterface
 
     void UpdateElo(string username, int value);
     List<UserDtos> GetAllUsers();
+    
+    UserStatsDto GetUserStats(string username);
 }

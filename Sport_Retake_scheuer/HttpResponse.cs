@@ -11,8 +11,8 @@ public class HttpResponse
     
     public byte[] GetBytes()
     {
-        var StatusInText = GetStatusInText(StatusCode);
-        var response = $"HTTP/1.1 {StatusCode} {StatusInText}\r\n" +
+        var statusInText = GetStatusInText(StatusCode);
+        var response = $"HTTP/1.1 {StatusCode} {statusInText}\r\n" +
                        $"Content-Length: {Encoding.UTF8.GetByteCount(Body)}\r\n" +
                        $"Connection: close\r\n" +
                        $"\r\n" +

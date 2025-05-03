@@ -9,3 +9,4 @@ public class HistoryEntryDto
     
     public  int TournamentId { get; set; }
 }
+

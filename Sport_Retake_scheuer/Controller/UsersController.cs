@@ -30,7 +30,7 @@ public class UsersController
         
         else if (request.Method == "GET" && request.Path == "/my_user_stats") //user soll seinen ELO value und aufsummierter push up count einsehen können
         {
-            Console.WriteLine("Muss implementiert werden");
+            return GetMyStatstics(request);
         }
 
         
@@ -211,6 +211,46 @@ public class UsersController
             Body = body
         };
     }
-    
+
+    private HttpResponse GetMyStatstics(HttpRequest request)
+    {
+        string jsonBody = request.Body;
+        var userDataDto = JsonConvert.DeserializeObject<UserDataDto>(jsonBody);
+        if(userDataDto == null)
+        {
+            throw new Exception("Deserialisierung fehlgeschlagen");
+        }
+        var username = userDataDto.Username;
+        var token = userDataDto.Token;
+        bool authcheck = _userRepository.AuthByUsernameAndToken(username, token);
+        if (authcheck == false)
+        {
+            return new HttpResponse
+            {
+                StatusCode = 400,
+                ContentType = "text/plain",
+                Body = "Fehler beim Authentifizieren"
+            };
+        }
+        
+        var userstats = _userRepository.GetUserStats(username);
+        if (userstats == null)
+        {
+            return new HttpResponse
+            {
+                StatusCode = 200,
+                ContentType = "text/plain",
+                Body = "Noch keine Einträge gefunden"
+            };
+        }
+        string responseBody = JsonConvert.SerializeObject(userstats);
+        
+        return new HttpResponse
+        {
+            StatusCode = 200,
+            ContentType = "text/plain",
+            Body = responseBody
+        };
+    }
 }
 

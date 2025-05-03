@@ -152,7 +152,35 @@ VALUES (@username, 0, 0, 0);";
         }
         return list;
     }
-    
 
+    public UserStatsDto GetUserStats(string username)
+    {
+        const string sql = @"
+            SELECT u.username, u.elo, COALESCE(SUM(h.pushup_count),0) AS total_pushups
+            FROM users u
+            LEFT JOIN history h ON u.username = h.username
+            WHERE u.username = @username
+            GROUP BY u.username, u.elo;";
+        
+        // ExecuteQueryWithParameters returns a DataTable
+        var table = DatabaseConnection.ExecuteQueryWithParameters(
+            sql,
+            ("@username", username)
+        );
+
+        if (table.Rows.Count == 0)
+            return null;
+
+        var row = table.Rows[0];
+        return new UserStatsDto
+        {
+            Username = row["username"].ToString(),
+            Elo = Convert.ToInt32(row["elo"]),
+            TotalPushupCount = Convert.ToInt32(row["total_pushups"])
+        };
+    }
 }
+
+
+
 

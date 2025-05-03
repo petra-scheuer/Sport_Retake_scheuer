@@ -50,7 +50,7 @@ public class HttpServer(int port)
     {
         using(client)
 
-        await using (var stream = client.GetStream()) //ergänzung zu var -> bedeutet, dass der Typ der variable zur Compile zeit bestimmt wird (Sagt dem Compiler, erkenn den typ selbst)
+        await using (var stream = client.GetStream()) //ergänzung zu var → bedeutet, dass der Typ der variable zur Compile zeit bestimmt wird (Sagt dem Compiler, erkenn den typ selbst)
         {
             try
             {
