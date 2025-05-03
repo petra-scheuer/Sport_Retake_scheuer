@@ -192,6 +192,7 @@ public class HistoryController
                 Body = "Fehler beim Aufrufen der Historie"
             };
         }
+        MyLogger.LogInfo($"User {username} hat {pushupcount} Pushups hinzugefügt");
         return new HttpResponse
         {
             StatusCode = 200,

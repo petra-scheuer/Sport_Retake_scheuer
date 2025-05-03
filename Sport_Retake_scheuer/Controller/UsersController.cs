@@ -68,6 +68,8 @@ public class UsersController
             
             if (created)
             {
+                MyLogger.LogInfo($"User {userDto.username} erstellt.");
+
                 var response = new HttpResponse();
                 response.StatusCode = 200;
                 response.ContentType = "text/plain";
@@ -94,7 +96,6 @@ public class UsersController
             };
         }
     }
-
     private HttpResponse ChangeUser(HttpRequest request)
     {
         string jsonBody = request.Body;
@@ -109,6 +110,8 @@ public class UsersController
         {
             if (changed)
             {
+                MyLogger.LogInfo($"Username {changeUserDto.OldUsername} erfolgreich geändert zu {changeUserDto.NewUsername}.");
+
                 return new HttpResponse
                 {
                     StatusCode = 200,
@@ -168,6 +171,7 @@ public class UsersController
                     };
                 }
                 string responseBody = JsonConvert.SerializeObject(new { Token = token });
+                MyLogger.LogInfo($"User {userDto.username} eingeloggt.");
                 return new HttpResponse
                 {
                     StatusCode = 200,

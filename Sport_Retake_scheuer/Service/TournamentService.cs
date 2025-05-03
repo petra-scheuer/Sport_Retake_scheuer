@@ -75,26 +75,33 @@ namespace Sport_Retake_scheuer.Service
             {
                 // Ein eindeutiger Gewinner: Gewinner erhält +2, alle anderen -1
                 _userRepo.UpdateElo(winners[0].Username, 2);
+                MyLogger.LogInfo($"User {winners[0].Username} hat gewonnen und erhält +2 Elo Punkte.");
+
                 foreach (var user in userTotals.Where(u => u.Username != winners[0].Username))
                 {
+                    MyLogger.LogInfo($"User {user.Username} hat verloren und erhält -1 Elo Punkte.");
                     _userRepo.UpdateElo(user.Username, -1);
                 }
             }
             else
             {
                 // Gleichstand: alle Gewinner erhalten +1, alle anderen -1
+                MyLogger.LogInfo($"Das Spiel ist unentschieden.");
                 foreach (var winner in winners)
                 {
+                    MyLogger.LogInfo($"User {winner.Username} hat damit gewonnen und erhält +1 Elo Punkte.");
                     _userRepo.UpdateElo(winner.Username, 1);
                 }
                 foreach (var user in userTotals.Where(u => !winners.Any(w => w.Username == u.Username)))
                 {
+                    MyLogger.LogInfo($"User {user.Username} hat  verloren und erhält -1 Elo Punkte.");
                     _userRepo.UpdateElo(user.Username, -1);
                 }
             }
     
             // Turnier als abgeschlossen markieren
             tournament.IsFinished = true;
+            MyLogger.LogInfo($"Das Tunier ist beendet. Tschüüüs!.");
             _tournamentRepo.UpdateTournament(tournament);
         }
     }

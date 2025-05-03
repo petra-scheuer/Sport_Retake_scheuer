@@ -42,7 +42,7 @@ public class TournamentRepository : ITournamentInterface
                      "VALUES ('" + formattedStartTime + "', false, NULL);";
 
         DatabaseConnection.ExecuteNonQueryWithParameters(sql);
-        MyLogger.LogInfo($"Erstelle Turnier mit Startzeit {startTime}. SQL: {sql}");
+        MyLogger.LogInfo($"Erstelle Turnier mit Startzeit {startTime}.");
     }
 
     public void UpdateTournament(TournamentDto tournament)
