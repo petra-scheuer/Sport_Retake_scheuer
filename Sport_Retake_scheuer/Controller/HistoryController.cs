@@ -9,10 +9,15 @@ public class HistoryController
 {
     private readonly IHistoryInterface _historyRepository;
     private readonly IUserInterface _userRepository;
-    public HistoryController(IHistoryInterface historyRepository, IUserInterface userRepository)
+    private readonly TournamentService _tournamentService;
+    public HistoryController(
+        IHistoryInterface historyRepository,
+        IUserInterface    userRepository,
+        TournamentService tournamentService)
     {
-        _historyRepository = historyRepository;
-        _userRepository = userRepository;
+        _historyRepository  = historyRepository;
+        _userRepository     = userRepository;
+        _tournamentService  = tournamentService;
     }
 
     public HttpResponse Handle(HttpRequest request)
@@ -175,7 +180,9 @@ public class HistoryController
                 Body = "Fehler beim Authentifizieren"
             };
         }
-        bool added = TournamentService.AddPushupRecord(HistoryEntryDto);
+        
+        
+        bool added = _tournamentService.AddPushupRecord(HistoryEntryDto);
         if (added == false || added == null)
         {
             return new HttpResponse

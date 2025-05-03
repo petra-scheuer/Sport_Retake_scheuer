@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using Newtonsoft.Json;
 using Sport_Retake_scheuer.DatalayerTransferObjects;
 using Sport_Retake_scheuer.Interfaces;
@@ -145,7 +146,9 @@ public class UsersController
         {
             throw new Exception("Deserialisierung fehlgeschlagen");
         }
+        //Console.WriteLine("Deserialiserung hat funktioniert"); //anm. Bugfixing Print statement, das war es nicht 
         
+        //Creedentials prüfen
         bool authentificated = _userRepository.AuthUser(userDto.username, userDto.password);
         try
         {

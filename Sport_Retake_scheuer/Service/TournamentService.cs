@@ -15,12 +15,12 @@ namespace Sport_Retake_scheuer.Service
         public TournamentService(ITournamentInterface tournamentRepo, IUserInterface userRepo, IHistoryInterface historyRepo)
         {
             _tournamentRepo = tournamentRepo;
-            var userInterface = _userRepo;
+            // var userInterface = _userRepo; anm.: bugfix
             _userRepo = userRepo;
             _historyRepo = historyRepo;
         }
     
-        public static bool AddPushupRecord(HistoryEntryDto entry)
+        public bool AddPushupRecord(HistoryEntryDto entry)
         {
             // Prüfen, ob ein aktives Turnier existiert (Turnier, das innerhalb der letzten 2 Minuten gestartet wurde und nicht abgeschlossen ist)
             var activeTournament = _tournamentRepo.GetActiveTournament();

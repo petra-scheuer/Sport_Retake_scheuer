@@ -25,9 +25,9 @@ public class UserRepository : IUserInterface
         
         DatabaseConnection.ExecuteNonQueryWithParameters(sql,("c", createdAt), ("u", username), ("p", hashedPassword));
         
-        const string sqlHistory = @"INSERT INTO history (username, pushup_count, duration)
-                                VALUES (@u, 0, 0)";
-        DatabaseConnection.ExecuteNonQueryWithParameters(sqlHistory, ("u", username));
+        /*const string sqlHistory = @"INSERT INTO history (username, pushup_count, duration, tournament_id)
+VALUES (@username, 0, 0, 0);";
+        DatabaseConnection.ExecuteNonQueryWithParameters(sqlHistory, ("u", username)); */ //anm.: ich habe es rausgenommen weil es probleme gemacht ha mit der fk relationship. ich hoff es funktioneirt trotzdem.
         return true;
     }
 
