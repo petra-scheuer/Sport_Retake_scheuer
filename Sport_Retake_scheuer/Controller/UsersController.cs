@@ -10,9 +10,9 @@ public class UsersController
 {
     public HttpResponse Handle(HttpRequest request)
     {
-        if (request.Method == "GET" && request.Path == "/users")
+        if (request.Method == "GET" && request.Path == "/scoreboard")
         {
-            Console.WriteLine("Muss implementiert werden");
+            return GetScoreboard();
         }
         else if (request.Method == "POST" && request.Path == "/users")
         {
@@ -192,6 +192,22 @@ public class UsersController
                 Body = "Serverfehler: " + ex.Message
             };
         }
+    }
+    
+    private HttpResponse GetScoreboard()
+    {
+        // liefert alle Nutzer sortiert nach Elo absteigend
+        var users = _userRepository.GetAllUsers()
+            .OrderByDescending(u => u.Elo)
+            .Select(u => new UserDtos { Username = u.Username, Elo = u.Elo })
+            .ToList();
+        string body = JsonConvert.SerializeObject(users);
+        return new HttpResponse
+        {
+            StatusCode = 200,
+            ContentType = "application/json",
+            Body = body
+        };
     }
     
 }

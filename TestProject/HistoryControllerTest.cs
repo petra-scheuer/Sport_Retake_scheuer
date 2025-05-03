@@ -16,6 +16,7 @@ namespace TestProject
         private Mock<IUserInterface> _userInterfaceMock;
         private Mock<ITournamentInterface> _tournamentInterfaceMock;
         private HistoryController _historyController;
+        private TournamentService _tournamentService;
 
         [SetUp]
         public void Setup()
@@ -38,10 +39,10 @@ namespace TestProject
                 .Callback<DateTime>(dt => { /* evtl. Dummy-Logik */ });
 
             // Durch den Konstruktoraufruf werden die statischen Felder gesetzt:
-            new TournamentService(_tournamentInterfaceMock.Object, _userInterfaceMock.Object, _historyInterfaceMock.Object);
+            _tournamentService = new TournamentService(_tournamentInterfaceMock.Object, _userInterfaceMock.Object, _historyInterfaceMock.Object);
 
             // Jetzt kannst du deinen HistoryController erzeugen
-            _historyController = new HistoryController(_historyInterfaceMock.Object, _userInterfaceMock.Object);
+            _historyController = new HistoryController(_historyInterfaceMock.Object, _userInterfaceMock.Object, _tournamentService );
         }
 
         [Test]

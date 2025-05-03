@@ -2,6 +2,7 @@ using Moq;
 using Newtonsoft.Json;
 using Sport_Retake_scheuer;
 using Sport_Retake_scheuer.Controller;
+using Sport_Retake_scheuer.DatalayerTransferObjects;
 using Sport_Retake_scheuer.Interfaces;
 
 namespace TestProject
@@ -158,6 +159,41 @@ namespace TestProject
             Assert.AreEqual("Username ändern fehlgeschlagen", response.Body);
         }
         
-        
+        [Test]
+        public void GetScoreboard_ReturnsUsersSortedByEloDescending()
+        {
+            // Arrange: drei Dummy-User mit unterschiedlicher Elo
+            var users = new List<UserDtos>
+            {
+                new() { Username = "alice", Elo = 1200 },
+                new() { Username = "bob",   Elo = 900  },
+                new() { Username = "carol", Elo = 1500 }
+            };
+            _userRepositoryMock
+                .Setup(r => r.GetAllUsers())
+                .Returns(users);
+
+            var request = new HttpRequest
+            {
+                Method = "GET",
+                Path   = "/scoreboard"
+            };
+
+            // Act
+            var response = _usersController.Handle(request);
+
+            // Assert
+            Assert.AreEqual(200, response.StatusCode);
+            Assert.AreEqual("application/json", response.ContentType);
+
+            // JSON in Liste zurück parsen
+            var list = JsonConvert.DeserializeObject<List<UserDtos>>(response.Body);
+            Assert.IsNotNull(list);
+            Assert.AreEqual(3, list.Count);
+
+            // Erwartete Reihenfolge: carol (1500), alice (1200), bob (900)
+            var usernames = list.Select(x => x.Username).ToList();
+            Assert.AreEqual(new[] { "carol", "alice", "bob" }, usernames);
+        }
     }
 }

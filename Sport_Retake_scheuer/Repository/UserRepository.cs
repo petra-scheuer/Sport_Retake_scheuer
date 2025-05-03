@@ -1,5 +1,6 @@
 using Sport_Retake_scheuer.Config;
 using System.Data;
+using Sport_Retake_scheuer.DatalayerTransferObjects;
 using Sport_Retake_scheuer.Interfaces;
 
 namespace Sport_Retake_scheuer.Repository;
@@ -134,6 +135,22 @@ VALUES (@username, 0, 0, 0);";
     public void UpdateElo(string username, int value)
     {
         throw new NotImplementedException();
+    }
+    
+    public List<UserDtos> GetAllUsers()
+    {
+        const string sql = @"SELECT username, elo FROM users";
+        var dt = DatabaseConnection.ExecuteQueryWithParameters(sql);
+        var list = new List<UserDtos>();
+        foreach (DataRow row in dt.Rows)
+        {
+            list.Add(new UserDtos
+            {
+                Username = row["username"].ToString(),
+                Elo = Convert.ToInt32(row["elo"])
+            });
+        }
+        return list;
     }
     
 

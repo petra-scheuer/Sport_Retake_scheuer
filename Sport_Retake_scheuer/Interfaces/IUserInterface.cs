@@ -1,3 +1,5 @@
+using Sport_Retake_scheuer.DatalayerTransferObjects;
+
 namespace Sport_Retake_scheuer.Interfaces;
 
 public interface IUserInterface
@@ -6,8 +8,9 @@ public interface IUserInterface
     bool AuthUser(string username, string password);
     bool UpdateToken(string username, string token);
     bool ChangeUsername(string oldUsername, string newUsername);
-    
+
     bool AuthByUsernameAndToken(string username, string token);
 
     void UpdateElo(string username, int value);
+    List<UserDtos> GetAllUsers();
 }
