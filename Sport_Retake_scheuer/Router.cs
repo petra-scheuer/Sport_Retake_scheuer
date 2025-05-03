@@ -30,7 +30,7 @@ public class Router
         {
             return _usersController.Handle(request);
         }
-        else if (request.Path.StartsWith("/login"))
+        else if (request.Path.StartsWith("/login") || request.Path == "/scoreboard")
         {
             return _usersController.Handle(request);
         }

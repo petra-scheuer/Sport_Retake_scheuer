@@ -202,6 +202,8 @@ public class UsersController
             .Select(u => new UserDtos { Username = u.Username, Elo = u.Elo })
             .ToList();
         string body = JsonConvert.SerializeObject(users);
+        
+        Console.WriteLine(users);
         return new HttpResponse
         {
             StatusCode = 200,

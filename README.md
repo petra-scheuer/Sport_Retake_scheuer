@@ -26,9 +26,14 @@ curl -X POST http://localhost:10001/login \
 
 curl -X GET http://localhost:10001/history \
      -H "Content-Type: application/json" \
-     -d "{\"username\": \"testuser\", \"Token\": \"c440c01f-3c9e-478f-8d6d-39790597dd12\"}"
+     -d "{\"username\": \"testuser\", \"Token\": \"3db72346-2c0d-462c-98b8-c71c98a6f99b\"}"
 
 ### Add a training
 curl -X POST http://localhost:10001/history \
      -H "Content-Type: application/json" \
-     -d "{\"Username\":\"testuser\", \"Token\":\"c440c01f-3c9e-478f-8d6d-39790597dd12\", \"pushupcount\":10, \"duration\":120}"
+     -d "{\"Username\":\"testuser\", \"Token\":\"3db72346-2c0d-462c-98b8-c71c98a6f99b\", \"pushupcount\":10, \"duration\":120}"
+
+
+curl -X GET http://localhost:10001/scoreboard \
+     -H "Content-Type: application/json"
+
