@@ -27,6 +27,12 @@ public class UsersController
             return LoginUser(request);
         }
         
+        else if (request.Method == "GET" && request.Path == "/my_user_stats") //user soll seinen ELO value und aufsummierter push up count einsehen können
+        {
+            Console.WriteLine("Muss implementiert werden");
+        }
+
+        
 
 
         var response = new HttpResponse

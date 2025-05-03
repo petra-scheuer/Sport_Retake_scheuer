@@ -45,7 +45,31 @@ public class HistoryRepository : IHistoryInterface
     }
     public List<HistoryEntryDto> GetRecordsByTournamentId(int tournamentId)
     {
-        throw new NotImplementedException();
+        const string sql = @"SELECT username, pushup_count, duration, tournament_id"
+                           + " FROM history WHERE tournament_id = @t";
+        
+        // Query ausführen und Ergebnis in DataTable einlesen
+        var dt = DatabaseConnection.ExecuteQueryWithParameters (sql, ("t", tournamentId)) as DataTable;
+        var records = new List<HistoryEntryDto>();
+
+        if (dt == null || dt.Rows.Count == 0)
+        {
+            return records; // anm.: Leere Liste zurückgeben, wenn keine Einträge vorhanden sind.
+        }
+        
+        // Jeder DataRow direkt in DTO umwandeln
+        foreach (DataRow row in dt.Rows)
+        {
+            records.Add(new HistoryEntryDto
+            {
+                Username = row["username"].ToString(),
+                Token = string.Empty,
+                PushupCount = row.Field<int>("pushup_count"),
+                Duration = row.Field<int>("duration"),
+                TournamentId = row.Field<int>("tournament_id")
+            });
+        }
+        return records;
     }
 
 }

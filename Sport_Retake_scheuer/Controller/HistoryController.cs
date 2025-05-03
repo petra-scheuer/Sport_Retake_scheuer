@@ -29,13 +29,62 @@ public class HistoryController
         {
             Console.WriteLine("Muss implementiert werden");
         }
-        
+
         else if (request.Method == "DELETE" && request.Path == "/history")
         {
             Console.WriteLine("Muss implementiert werden");
         }
-        
-        var response = new HttpResponse
+
+        else if (request.Method == "GET" && request.Path == "/tournament")
+        {
+            // Query-String aus Path extrahieren: /tournament?tournamentId=1
+            var idString = request.Path.Replace("/tournament?tournamentId=", "");
+
+            if (!int.TryParse(idString, out var tournamentId))
+            {
+                return new HttpResponse
+                {
+                    StatusCode = 400,
+                    ContentType = "text/plain",
+                    Body = "Ungültige tournamentId"
+                };
+            }
+
+            try
+            {
+                var records = _historyRepository.GetRecordsByTournamentId(tournamentId);
+                if (records == null || records.Count == 0)
+                {
+                    return new HttpResponse
+                    {
+                        StatusCode = 404,
+                        ContentType = "text/plain",
+                        Body = $"Keine Einträge für Turnier {tournamentId} gefunden."
+                    };
+                } 
+                return new HttpResponse
+                {
+                    StatusCode = 200,
+                    ContentType = "application/json",
+                    Body = JsonConvert.SerializeObject(records)
+                }; 
+
+            }
+            catch
+            {
+                return new HttpResponse
+                {
+                    StatusCode = 500,
+                    ContentType = "text/plain",
+                    Body = "Internal Server Error"
+                };
+            }
+            
+
+            
+        }
+
+    var response = new HttpResponse
         {
             StatusCode = 200,
             ContentType = "text/plain",
